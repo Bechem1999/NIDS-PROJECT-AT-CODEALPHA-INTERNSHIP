@@ -100,18 +100,119 @@ The custom detection rule was placed in:
 /etc/snort/rules/local.rules
 
 # 🚨 Custom IDS Detection Rule
-The following custom rule was developed for the project:
 
+The custom Intrusion Detection System (IDS) rule was developed using Snort 3 to detect ICMP traffic within the authorized test environment.
+
+The rule was saved in the following file:
+
+```text
+/etc/snort/rules/local.rules
+```
+
+## Custom Rule
+
+```text
 alert icmp any any -> any any (msg:"CODEALPHA ICMP TRAFFIC DETECTED"; sid:1000001; rev:1;)
+```
 
-# Rule Explanation
-alert
-Generates an IDS alert when the rule matches.
-icmp
-Specifies that the rule monitors ICMP traffic.
-any any -> any any
-Allows the rule to detect ICMP traffic between any source and destination.
-msg:"CODEALPHA ICMP TRAFFIC DETECTED"
+### Rule Explanation
+
+- **`alert`**: Generates an alert when the rule matches traffic.
+- **`icmp`**: Specifies the protocol to detect.
+- **`any any -> any any`**: Matches ICMP traffic between any source and destination. The port fields are not meaningful for ICMP.
+- **`msg`**: Defines the alert message.
+- **`sid:1000001`**: Identifies the custom Snort rule.
+- **`rev:1`**: Specifies the rule revision.
+
+## 🧪 Configuration Testing
+
+Before starting the IDS, the Snort configuration and custom rule were validated using:
+
+```bash
+sudo snort -c /etc/snort/snort.lua \
+-R /etc/snort/rules/local.rules \
+-T
+```
+
+### Validation Result
+
+The configuration test completed successfully, displaying:
+
+```text
+Snort successfully validated the configuration (with 0 warnings).
+```
+
+This confirmed that Snort could load the configuration and custom detection rule without configuration warnings.
+
+## 📡 Network Monitoring
+
+Snort was started on the active network interface, `eth0`, using the following command:
+
+```bash
+sudo snort -c /etc/snort/snort.lua \
+-R /etc/snort/rules/local.rules \
+-i eth0 \
+-A alert_fast
+```
+
+### Command Explanation
+
+- **`-c`**: Specifies the Snort configuration file.
+- **`-R`**: Loads the custom detection rules.
+- **`-i eth0`**: Specifies the network interface to monitor.
+- **`-A alert_fast`**: Displays alerts in a concise format.
+
+The IDS remained active while test traffic was generated from another terminal.
+
+## 🧪 Controlled ICMP Traffic Test
+
+To verify that the custom rule worked, controlled ICMP traffic was generated toward the configured network gateway.
+
+The command used was:
+
+```bash
+ping -c 4 10.0.0.1
+```
+
+### Ping Test Result
+
+The test produced the following result:
+
+```text
+4 packets transmitted
+4 packets received
+0% packet loss
+```
+
+This confirmed that the gateway responded to the ICMP test traffic.
+
+## 🚨 IDS Detection Result
+
+While the ping test was running, Snort detected the ICMP traffic and generated alerts matching the custom rule.
+
+### Example Alert
+
+```text
+[1:1000001:1] "CODEALPHA ICMP TRAFFIC DETECTED"
+```
+
+The detected traffic included:
+
+```text
+{ICMP} 10.0.0.2 -> 10.0.0.1
+```
+
+### Detection Summary
+
+| Test Component | Result |
+|---|---|
+| Snort installation | Successful |
+| Configuration validation | Successful |
+| Custom rule loading | Successful |
+| Network interface monitoring | Successful |
+| ICMP traffic generation | Successful |
+| Custom rule matching | Successful |
+| IDS alert generation | Successful |
 
 # 🔄 Detection Workflow
 The complete detection process can be summarized as:
@@ -189,3 +290,11 @@ This project was developed strictly for:
 The traffic used for testing was generated within an authorized environment.
 The project should not be used to monitor, scan, attack, or interfere with networks or systems without explicit authorization.
 
+# 👨🏽‍💻 Author
+
+ATEMLEFAC NKAFU BECHEM 
+Cybersecurity Engineer
+
+LinkedIn: https://www.linkedin.com/in/atemlefac-nkafu-bechem-179987248
+
+CodeAlpha Cyber Security Internship
